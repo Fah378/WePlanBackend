@@ -4,8 +4,8 @@ const Schema = mongoose.Schema;
 
 const PlansSchema = new Schema({
     tripName: String,
-    province: String,
-    category: String,
+    description: String,
+    // category: String,
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     isPublic: Boolean,
