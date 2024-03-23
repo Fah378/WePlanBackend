@@ -57,15 +57,6 @@ router.post('/plans', async (req, res) => {
             })
         }
 
-        //Checking if tripName already exists
-        // const existingPlan = await Plans.findOne({ tripName });
-        // if (existingPlan) {
-        //     return res.json({
-        //         status: "FAILED",
-        //         message: "This trip name has been used"
-        //     });
-        // }
-
         const newPlan = new Plans({
             tripName,
             description,
@@ -112,14 +103,14 @@ router.get('/plans/:useruserID', async (req, res) => {
             return res.status(404).json({ error: 'No plans found for the specified user ID' });
         }
 
-        // Extract trip names from the found plans
+        // Extract trip details including PlanID from the found plans
         const tripDetails = plans.map(plan => ({
+            planID: plan._id, // Include the PlanID
             tripName: plan.tripName,
             startDate: plan.startDate,
             endDate: plan.endDate,
             description: plan.description
         }));
-
 
         res.status(200).json({ tripDetails });
     } catch (error) {

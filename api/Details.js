@@ -45,7 +45,7 @@ router.post('/details', async (req, res) => {
         res.json({
             status: "SUCCESS",
             message: "Add new detail successful",
-            data: savedDetails, 
+            data: savedDetails,
         });        
     } catch (error) {
         console.error('Error adding new detail', error);
