@@ -119,4 +119,63 @@ router.get('/plans/:useruserID', async (req, res) => {
     }    
 });
 
+router.put('/plans/:planID/togglePublic', async (req, res) => {
+    // Retrieve planID from request parameters
+    const planID = req.params.planID;
+
+    // Validate planID as a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(planID)) {
+        return res.status(400).json({ error: 'Invalid Plan ID' });
+    }
+
+    try {
+        // Find the plan by ID
+        const plan = await Plans.findById(planID);
+
+        if (!plan) {
+            return res.status(404).json({ error: 'Plan not found' });
+        }
+
+        // Toggle the isPublic field
+        plan.isPublic = !plan.isPublic;
+
+        // Save the updated plan
+        const updatedPlan = await plan.save();
+
+        res.status(200).json({
+            status: "SUCCESS",
+            message: "Toggle public status successful",
+            data: updatedPlan,
+        });
+    } catch (error) {
+        console.error('Error toggling public status:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.get('/public-plans', async (req, res) => {
+    try {
+        // Find all plans where isPublic is true
+        const publicPlans = await Plans.find({ isPublic: true });
+
+        if (!publicPlans || publicPlans.length === 0) {
+            return res.status(404).json({ error: 'No public plans found' });
+        }
+
+        // Extract trip details including PlanID from the found plans
+        const tripDetails = publicPlans.map(plan => ({
+            planID: plan._id, // Include the PlanID
+            tripName: plan.tripName,
+            startDate: plan.startDate,
+            endDate: plan.endDate,
+            description: plan.description
+        }));
+
+        res.status(200).json({ tripDetails });
+    } catch (error) {
+        console.error('Error getting public plans:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 module.exports = router;
