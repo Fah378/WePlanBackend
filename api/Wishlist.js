@@ -47,4 +47,35 @@ router.post('/wishlist', async (req, res) => {
     }
 });
 
+router.get('/see-wishlist/:userID', async (req, res) => {
+    // Retrieve userID from request parameters
+    const userID = req.params.userID;
+
+    // Validate userID as a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(userID)) {
+        return res.status(400).json({ error: 'Invalid User ID' });
+    }
+
+    try {
+        // Find wishlist associated with the user ID
+        const wishlist = await Wishlist.find({ userID: userID });
+
+        if (!wishlist) {
+            return res.status(404).json({ error: 'No wishlist found for the specified user ID' });
+        }
+
+        // Extract wishlist details
+        const wishlistDetails = wishlist.map(item => ({
+            locationName: item.locationName,
+            lat: item.lat,
+            lng: item.lng
+        }));
+
+        res.status(200).json({ wishlist: wishlistDetails });
+    } catch (error) {
+        console.error('Error getting wishlist:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }    
+});
+
 module.exports = router;
